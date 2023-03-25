@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33103.201
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BtcTurk.Api", "BtcTurk.Api\BtcTurk.Api.csproj", "{70187D2D-7CD2-45F9-9AE5-40B0D8C73BBC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F685DAC1-27D0-4150-9540-5FFB4F283F45}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BtcTurk.Api.Samples", "BtcTurk.Api.Samples\BtcTurk.Api.Samples.csproj", "{BF1970D3-0818-404C-ACDF-9F0D47B574EF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{86D9334B-E22E-4A36-A71F-CEAB600B575D}"
+	ProjectSection(SolutionItems) = preProject
+		docs\btcturk.api.v1.swagger.json = docs\btcturk.api.v1.swagger.json
+		docs\btcturk.api.v2.swagger.json = docs\btcturk.api.v2.swagger.json
+		docs\btcturk.api.v3.swagger.json = docs\btcturk.api.v3.swagger.json
+		docs\WebSocket Feed 2.4.0.pdf = docs\WebSocket Feed 2.4.0.pdf
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70187D2D-7CD2-45F9-9AE5-40B0D8C73BBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70187D2D-7CD2-45F9-9AE5-40B0D8C73BBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70187D2D-7CD2-45F9-9AE5-40B0D8C73BBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70187D2D-7CD2-45F9-9AE5-40B0D8C73BBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF1970D3-0818-404C-ACDF-9F0D47B574EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF1970D3-0818-404C-ACDF-9F0D47B574EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF1970D3-0818-404C-ACDF-9F0D47B574EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF1970D3-0818-404C-ACDF-9F0D47B574EF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {46BEC2FB-574D-4891-8882-3B99A6FC9D25}
+	EndGlobalSection
+EndGlobal
