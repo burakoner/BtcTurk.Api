@@ -1,5 +1,4 @@
-﻿using ApiSharp.Authentication;
-using ApiSharp.Stream;
+﻿using ApiSharp.Stream;
 using BtcTurk.Api;
 using BtcTurk.Api.Enums;
 using System;
@@ -14,15 +13,9 @@ namespace BtcTurk.Samples
         static async Task Main(string[] args)
         {
             // BtcTurk Rest Api Client
-            var api = new BtcTurkClient(new BtcTurkClientOptions
-            {
-                RawResponse = true,
-                ApiCredentials = new ApiCredentials("XXXXXXXX-API-KEY-XXXXXXXX", "XXXXXXXX-API-SECRET-XXXXXXXX")
-            });
+            var api = new BtcTurkRestClient();
             api.SetApiCredentials("XXXXXXXX-API-KEY-XXXXXXXX", "XXXXXXXX-API-SECRET-XXXXXXXX");
-            api.SetApiCredentials("ef54b7e4-8b62-484f-a263-a7718ffa0f27", "xuvLFHLpnpB5U4fPdHngpCjez8MaIs9d");
 
-            /*
             // Public Endpoints
             var btcTurk_01 = await api.PingAsync();
             var btcTurk_02 = await api.GetServerTimeAsync();
@@ -43,7 +36,6 @@ namespace BtcTurk.Samples
             var btcTurk_17 = await api.GetOrderAsync(100001);
             var btcTurk_18 = await api.PlaceOrderAsync("BTCTRY", 1.0m, BtcTurkOrderSide.Buy, BtcTurkOrderMethod.Market);
             var btcTurk_19 = await api.CancelOrderAsync(100001);
-            */
 
             var pairs = new List<string> {
                 "ATOMTRY","BTCTRY","DASHTRY","EOSTRY","ETHTRY","LINKTRY","LTCTRY","NEOTRY","USDTTRY","XLMTRY","XRPTRY","XTZTRY",
@@ -52,7 +44,7 @@ namespace BtcTurk.Samples
             };
 
             // BtcTurk Websocket Api Client
-            var ws = new BtcTurkSocketClient();
+            var ws = new BtcTurkStreamClient();
 
             // Public Socket Endpoints
             var subs = new List<UpdateSubscription>();
@@ -71,7 +63,6 @@ namespace BtcTurk.Samples
                 });
                 subs.Add(subscription.Data);
             }
-            Console.ReadLine();
 
             // All Tickers
             {

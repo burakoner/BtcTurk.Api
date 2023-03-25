@@ -1,6 +1,6 @@
 ﻿namespace BtcTurk.Api;
 
-public class BtcTurkClient : RestApiClient
+public class BtcTurkRestClient : RestApiClient
 {
     #region Endpoints
     // Api Version
@@ -31,11 +31,11 @@ public class BtcTurkClient : RestApiClient
     #endregion
 
     #region Constructors
-    public BtcTurkClient() : this(new BtcTurkClientOptions())
+    public BtcTurkRestClient() : this(new BtcTurkRestClientOptions())
     {
     }
 
-    public BtcTurkClient(BtcTurkClientOptions options) : base("BtcTurk Rest Api", options)
+    public BtcTurkRestClient(BtcTurkRestClientOptions options) : base("BtcTurk Rest Api", options)
     {
     }
     #endregion
@@ -50,7 +50,7 @@ public class BtcTurkClient : RestApiClient
     }
 
     protected override TimeSyncInfo GetTimeSyncInfo()
-        => new(log, ((BtcTurkClientOptions)ClientOptions).AutoTimestamp, ((BtcTurkClientOptions)ClientOptions).TimestampRecalculationInterval, TimeSyncState);
+        => new(log, ((BtcTurkRestClientOptions)ClientOptions).AutoTimestamp, ((BtcTurkRestClientOptions)ClientOptions).TimestampRecalculationInterval, TimeSyncState);
 
     protected override TimeSpan GetTimeOffset()
         => TimeSyncState.TimeOffset;
@@ -220,7 +220,7 @@ public class BtcTurkClient : RestApiClient
         parameters.AddOptionalParameter("from", from.ConvertToSeconds());
         parameters.AddOptionalParameter("to", to.ConvertToSeconds());
 
-        return await RawExecuteAsync<IEnumerable<BtcTurkOhlc>>(GetUri(v1, ohlcsEndpoint, ((BtcTurkClientOptions)ClientOptions).GraphApiAddress), HttpMethod.Get, ct, queryParameters: parameters).ConfigureAwait(false);
+        return await RawExecuteAsync<IEnumerable<BtcTurkOhlc>>(GetUri(v1, ohlcsEndpoint, ((BtcTurkRestClientOptions)ClientOptions).GraphApiAddress), HttpMethod.Get, ct, queryParameters: parameters).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -243,7 +243,7 @@ public class BtcTurkClient : RestApiClient
         parameters.AddOptionalParameter("from", from.ConvertToSeconds());
         parameters.AddOptionalParameter("to", to.ConvertToSeconds());
 
-        var result = await RawExecuteAsync<BtcTurkKlineData>(GetUri(v1, klinesHistoryEndpoint, ((BtcTurkClientOptions)ClientOptions).GraphApiAddress), HttpMethod.Get, ct, queryParameters: parameters).ConfigureAwait(false);
+        var result = await RawExecuteAsync<BtcTurkKlineData>(GetUri(v1, klinesHistoryEndpoint, ((BtcTurkRestClientOptions)ClientOptions).GraphApiAddress), HttpMethod.Get, ct, queryParameters: parameters).ConfigureAwait(false);
         if (!result.Success 
             || result.Data == null
             || result.Data.Times == null

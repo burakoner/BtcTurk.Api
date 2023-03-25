@@ -1,13 +1,13 @@
 ﻿namespace BtcTurk.Api;
 
-public class BtcTurkSocketClient : StreamApiClient
+public class BtcTurkStreamClient : StreamApiClient
 {
     #region Constructor/Destructor
-    public BtcTurkSocketClient() : this(BtcTurkStreamClientOptions.Default)
+    public BtcTurkStreamClient() : this(BtcTurkStreamClientOptions.Default)
     {
     }
 
-    public BtcTurkSocketClient(BtcTurkStreamClientOptions options) : base("BtcTurk Stream Api", options)
+    public BtcTurkStreamClient(BtcTurkStreamClientOptions options) : base("BtcTurk Stream Api", options)
     {
     }
     #endregion

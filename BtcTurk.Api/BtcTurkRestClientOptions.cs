@@ -1,6 +1,6 @@
 ﻿namespace BtcTurk.Api;
 
-public class BtcTurkClientOptions : RestApiClientOptions
+public class BtcTurkRestClientOptions : RestApiClientOptions
 {
     // Additional Api Addresses
     public string GraphApiAddress { get; set; }
@@ -9,7 +9,7 @@ public class BtcTurkClientOptions : RestApiClientOptions
     public bool AutoTimestamp { get; set; }
     public TimeSpan TimestampRecalculationInterval { get; set; }
 
-    public BtcTurkClientOptions() : base()
+    public BtcTurkRestClientOptions() : base()
     {
         // Base Addresses
         this.BaseAddress = BtcTurkAddresses.Default.ApiAddress;
