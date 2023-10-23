@@ -323,11 +323,11 @@ public class BtcTurkRestClient : RestApiClient
     /// <param name="endTime">long, Optional timestamp if null will return last 30 days</param>
     /// <param name="ct">Cancellation Token</param>
     /// <returns></returns>
-    public async Task<RestCallResult<IEnumerable<BtcTurkWalletTransaction>>> GetFiatTransactionsAsync(string[] assets = null, BtcTurkOrderSide[] type = null, DateTime? startTime = null, DateTime? endTime = null, CancellationToken ct = default)
+    public async Task<RestCallResult<IEnumerable<BtcTurkWalletTransaction>>> GetFiatTransactionsAsync(string[] assets = null, BtcTurkTransferType[] type = null, DateTime? startTime = null, DateTime? endTime = null, CancellationToken ct = default)
     {
         var parameters = new Dictionary<string, object>();
         parameters.AddOptionalParameter("symbol", assets);
-        parameters.AddOptionalParameter("type", JsonConvert.DeserializeObject<string[]>(JsonConvert.SerializeObject(type, new OrderSideConverter(true))));
+        parameters.AddOptionalParameter("type", JsonConvert.DeserializeObject<string[]>(JsonConvert.SerializeObject(type, new TransferTypeConverter(true))));
         parameters.AddOptionalParameter("startDate", startTime?.ToUnixTimeMilliseconds().ToString());
         parameters.AddOptionalParameter("endDate", endTime?.ToUnixTimeMilliseconds().ToString());
 
@@ -343,15 +343,15 @@ public class BtcTurkRestClient : RestApiClient
     /// <param name="endTime">long, Optional timestamp if null will return last 30 days</param>
     /// <param name="ct">Cancellation Token</param>
     /// <returns></returns>
-    public async Task<RestCallResult<IEnumerable<BtcTurkWalletTransaction>>> GetCryptoTransactionsAsync(string[] assets = null, BtcTurkOrderSide[] type = null, DateTime? startTime = null, DateTime? endTime = null, CancellationToken ct = default)
+    public async Task<RestCallResult<IEnumerable<BtcTurkWalletTransaction>>> GetCryptoTransactionsAsync(string[] assets = null, BtcTurkTransferType[] type = null, DateTime? startTime = null, DateTime? endTime = null, CancellationToken ct = default)
     {
         var parameters = new Dictionary<string, object>();
         parameters.AddOptionalParameter("symbol", assets);
-        parameters.AddOptionalParameter("type", JsonConvert.DeserializeObject<string[]>(JsonConvert.SerializeObject(type, new OrderSideConverter(true))));
+        parameters.AddOptionalParameter("type", JsonConvert.DeserializeObject<string[]>(JsonConvert.SerializeObject(type, new TransferTypeConverter(true))));
         parameters.AddOptionalParameter("startDate", startTime?.ToUnixTimeMilliseconds().ToString());
         parameters.AddOptionalParameter("endDate", endTime?.ToUnixTimeMilliseconds().ToString());
 
-        return await ExecuteAsync<IEnumerable<BtcTurkWalletTransaction>>(GetUri(v1, usersTransactionsCryptoEndpoint), HttpMethod.Get, ct, queryParameters: parameters).ConfigureAwait(false);
+        return await ExecuteAsync<IEnumerable<BtcTurkWalletTransaction>>(GetUri(v1, usersTransactionsCryptoEndpoint), HttpMethod.Get, ct, queryParameters: parameters, signed: true).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -383,12 +383,11 @@ public class BtcTurkRestClient : RestApiClient
     {
         var parameters = new Dictionary<string, object>();
         parameters.AddOptionalParameter("pairSymbol", symbol);
-        parameters.AddOptionalParameter("orderId", startOrderId != null ? startOrderId : null);
-        parameters.AddOptionalParameter("startTime", startTime?.ToUnixTimeMilliseconds().ToString());
-        parameters.AddOptionalParameter("endTime", endTime?.ToUnixTimeMilliseconds().ToString());
-        parameters.AddOptionalParameter("limit", limit != null ? limit : null);
-        // parameters.AddOptionalParameter("page", page != null ? page - 1 : null);
-        parameters.AddOptionalParameter("page", page != null ? page : null);
+        parameters.AddOptionalParameter("orderId", startOrderId);
+        parameters.AddOptionalParameter("startTime", startTime?.ToUnixTimeSeconds().ToString());
+        parameters.AddOptionalParameter("endTime", endTime?.ToUnixTimeSeconds().ToString());
+        parameters.AddOptionalParameter("limit", limit);
+        parameters.AddOptionalParameter("page", page);
 
         return await ExecuteAsync<IEnumerable<BtcTurkOrder>>(GetUri(v1, allOrdersEndpoint), HttpMethod.Get, ct, queryParameters: parameters, signed: true).ConfigureAwait(false);
     }

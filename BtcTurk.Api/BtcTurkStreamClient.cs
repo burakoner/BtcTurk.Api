@@ -1,13 +1,15 @@
-﻿namespace BtcTurk.Api;
+﻿using ApiSharp.WebSocket;
 
-public class BtcTurkStreamClient : StreamApiClient
+namespace BtcTurk.Api;
+
+public class BtcTurkStreamClient : WebSocketApiClient
 {
     #region Constructor/Destructor
     public BtcTurkStreamClient() : this(BtcTurkStreamClientOptions.Default)
     {
     }
 
-    public BtcTurkStreamClient(BtcTurkStreamClientOptions options) : base("BtcTurk Stream Api", options)
+    public BtcTurkStreamClient(BtcTurkStreamClientOptions options) : base("BtcTurk WebSocket Api", options)
     {
     }
     #endregion
@@ -17,7 +19,7 @@ public class BtcTurkStreamClient : StreamApiClient
     protected override AuthenticationProvider CreateAuthenticationProvider(ApiCredentials credentials)
         => new BtcTurkAuthenticationProvider(credentials);
 
-    protected override bool HandleQueryResponse<T>(StreamConnection connection, object request, JToken data, out CallResult<T> callResult)
+    protected override bool HandleQueryResponse<T>(WebSocketConnection connection, object request, JToken data, out CallResult<T> callResult)
     {
         // out params
         callResult = new CallResult<T>(null);
@@ -42,7 +44,7 @@ public class BtcTurkStreamClient : StreamApiClient
         return true;
     }
 
-    protected override bool HandleSubscriptionResponse(StreamConnection connection, StreamSubscription subscription, object request, JToken data, out CallResult<object> callResult)
+    protected override bool HandleSubscriptionResponse(WebSocketConnection connection, WebSocketSubscription subscription, object request, JToken data, out CallResult<object> callResult)
     {
         // out params
         callResult = new CallResult<object>(null);
@@ -104,7 +106,7 @@ public class BtcTurkStreamClient : StreamApiClient
         return false;
     }
 
-    protected override bool MessageMatchesHandler(StreamConnection connection, JToken message, object request)
+    protected override bool MessageMatchesHandler(WebSocketConnection connection, JToken message, object request)
     {
         try
         {
@@ -208,7 +210,7 @@ public class BtcTurkStreamClient : StreamApiClient
         return false;
     }
 
-    protected override bool MessageMatchesHandler(StreamConnection connection, JToken message, string identifier)
+    protected override bool MessageMatchesHandler(WebSocketConnection connection, JToken message, string identifier)
     {
         if (message.Type != JTokenType.Object)
             return false;
@@ -216,7 +218,7 @@ public class BtcTurkStreamClient : StreamApiClient
         return false;
     }
 
-    protected override Task<CallResult<bool>> AuthenticateAsync(StreamConnection s)
+    protected override Task<CallResult<bool>> AuthenticateAsync(WebSocketConnection s)
     {
         throw new NotImplementedException();
 
@@ -266,7 +268,7 @@ public class BtcTurkStreamClient : StreamApiClient
         */
     }
 
-    protected override async Task<bool> UnsubscribeAsync(StreamConnection connection, StreamSubscription s)
+    protected override async Task<bool> UnsubscribeAsync(WebSocketConnection connection, WebSocketSubscription s)
     {
         // string topic = "";
         object unsub = null;
@@ -321,31 +323,31 @@ public class BtcTurkStreamClient : StreamApiClient
     #endregion
 
     #region Subscriptions
-    public virtual async Task<CallResult<UpdateSubscription>> SubscribeToTickerAsync(string symbol, Action<BtcTurkStreamTickerSingle> onData, CancellationToken ct = default)
+    public virtual async Task<CallResult<WebSocketUpdateSubscription>> SubscribeToTickerAsync(string symbol, Action<BtcTurkStreamTickerSingle> onData, CancellationToken ct = default)
     {
         var request = new BtcTurkStreamRequest(151, "ticker", symbol, true);
-        var internalHandler = new Action<StreamDataEvent<BtcTurkStreamResponse>>(data => onData(JsonConvert.DeserializeObject<BtcTurkStreamTickerSingle>(data.Data.Data)));
+        var internalHandler = new Action<WebSocketDataEvent<BtcTurkStreamResponse>>(data => onData(JsonConvert.DeserializeObject<BtcTurkStreamTickerSingle>(data.Data.Data)));
         return await SubscribeAsync(request.RequestObject(), null, false, internalHandler, ct).ConfigureAwait(false);
     }
 
-    public virtual async Task<CallResult<UpdateSubscription>> SubscribeToTickersAsync(Action<BtcTurkStreamTickerAll> onData, CancellationToken ct = default)
+    public virtual async Task<CallResult<WebSocketUpdateSubscription>> SubscribeToTickersAsync(Action<BtcTurkStreamTickerAll> onData, CancellationToken ct = default)
     {
         var request = new BtcTurkStreamRequest(151, "ticker", "all", true);
-        var internalHandler = new Action<StreamDataEvent<BtcTurkStreamResponse>>(data => onData(JsonConvert.DeserializeObject<BtcTurkStreamTickerAll>(data.Data.Data)));
+        var internalHandler = new Action<WebSocketDataEvent<BtcTurkStreamResponse>>(data => onData(JsonConvert.DeserializeObject<BtcTurkStreamTickerAll>(data.Data.Data)));
         return await SubscribeAsync(request.RequestObject(), null, false, internalHandler, ct).ConfigureAwait(false);
     }
 
-    public virtual async Task<CallResult<UpdateSubscription>> SubscribeToKlinesAsync(string symbol, BtcTurkPeriod period, Action<BtcTurkStreamKline> onData, CancellationToken ct = default)
+    public virtual async Task<CallResult<WebSocketUpdateSubscription>> SubscribeToKlinesAsync(string symbol, BtcTurkPeriod period, Action<BtcTurkStreamKline> onData, CancellationToken ct = default)
     {
         var request = new BtcTurkStreamRequest(151, "tradeview", $"{symbol}_{JsonConvert.SerializeObject(period, new PeriodConverter(false))}", true);
-        var internalHandler = new Action<StreamDataEvent<BtcTurkStreamResponse>>(data => onData(JsonConvert.DeserializeObject<BtcTurkStreamKline>(data.Data.Data)));
+        var internalHandler = new Action<WebSocketDataEvent<BtcTurkStreamResponse>>(data => onData(JsonConvert.DeserializeObject<BtcTurkStreamKline>(data.Data.Data)));
         return await SubscribeAsync(request.RequestObject(), null, false, internalHandler, ct).ConfigureAwait(false);
     }
 
-    public virtual async Task<CallResult<UpdateSubscription>> SubscribeToTradesAsync(string symbol, Action<BtcTurkStreamTradeList> onListData, Action<BtcTurkStreamTradeSingle> onRowData, CancellationToken ct = default)
+    public virtual async Task<CallResult<WebSocketUpdateSubscription>> SubscribeToTradesAsync(string symbol, Action<BtcTurkStreamTradeList> onListData, Action<BtcTurkStreamTradeSingle> onRowData, CancellationToken ct = default)
     {
         var request = new BtcTurkStreamRequest(151, "trade", symbol, true);
-        var internalHandler = new Action<StreamDataEvent<BtcTurkStreamResponse>>(data =>
+        var internalHandler = new Action<WebSocketDataEvent<BtcTurkStreamResponse>>(data =>
           {
               if (data.Data.Model == 421) onListData(JsonConvert.DeserializeObject<BtcTurkStreamTradeList>(data.Data.Data));
               if (data.Data.Model == 422) onRowData(JsonConvert.DeserializeObject<BtcTurkStreamTradeSingle>(data.Data.Data));
@@ -354,17 +356,17 @@ public class BtcTurkStreamClient : StreamApiClient
         return await SubscribeAsync(request.RequestObject(), null, false, internalHandler, ct).ConfigureAwait(false);
     }
 
-    public virtual async Task<CallResult<UpdateSubscription>> SubscribeToOrderBookFullAsync(string symbol, Action<BtcTurkStreamOrderBookFull> onData, CancellationToken ct = default)
+    public virtual async Task<CallResult<WebSocketUpdateSubscription>> SubscribeToOrderBookFullAsync(string symbol, Action<BtcTurkStreamOrderBookFull> onData, CancellationToken ct = default)
     {
         var request = new BtcTurkStreamRequest(151, "orderbook", symbol, true);
-        var internalHandler = new Action<StreamDataEvent<BtcTurkStreamResponse>>(data => onData(JsonConvert.DeserializeObject<BtcTurkStreamOrderBookFull>(data.Data.Data)));
+        var internalHandler = new Action<WebSocketDataEvent<BtcTurkStreamResponse>>(data => onData(JsonConvert.DeserializeObject<BtcTurkStreamOrderBookFull>(data.Data.Data)));
         return await SubscribeAsync(request.RequestObject(), null, false, internalHandler, ct).ConfigureAwait(false);
     }
 
-    public virtual async Task<CallResult<UpdateSubscription>> SubscribeToOrderBookDiffAsync(string symbol, Action<BtcTurkStreamOrderBookFull> onFullData, Action<BtcTurkStreamOrderBookDifference> onDiffData, CancellationToken ct = default)
+    public virtual async Task<CallResult<WebSocketUpdateSubscription>> SubscribeToOrderBookDiffAsync(string symbol, Action<BtcTurkStreamOrderBookFull> onFullData, Action<BtcTurkStreamOrderBookDifference> onDiffData, CancellationToken ct = default)
     {
         var request = new BtcTurkStreamRequest(151, "obdiff", symbol, true);
-        var internalHandler = new Action<StreamDataEvent<BtcTurkStreamResponse>>(data =>
+        var internalHandler = new Action<WebSocketDataEvent<BtcTurkStreamResponse>>(data =>
         {
             if (data.Data.Model == 431) onFullData(JsonConvert.DeserializeObject<BtcTurkStreamOrderBookFull>(data.Data.Data));
             if (data.Data.Model == 432) onDiffData(JsonConvert.DeserializeObject<BtcTurkStreamOrderBookDifference>(data.Data.Data));

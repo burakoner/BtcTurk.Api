@@ -1,6 +1,6 @@
 ﻿namespace BtcTurk.Api;
 
-public class BtcTurkStreamClientOptions : StreamApiClientOptions
+public class BtcTurkStreamClientOptions : WebSocketApiClientOptions
 {
     public static BtcTurkStreamClientOptions Default { get; set; } = new();
 

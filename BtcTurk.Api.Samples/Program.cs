@@ -1,4 +1,4 @@
-﻿using ApiSharp.Stream;
+﻿using ApiSharp.WebSocket;
 using BtcTurk.Api;
 using BtcTurk.Api.Enums;
 using System;
@@ -16,6 +16,7 @@ namespace BtcTurk.Samples
             var api = new BtcTurkRestClient();
             api.SetApiCredentials("XXXXXXXX-API-KEY-XXXXXXXX", "XXXXXXXX-API-SECRET-XXXXXXXX");
 
+            /*
             // Public Endpoints
             var btcTurk_01 = await api.PingAsync();
             var btcTurk_02 = await api.GetServerTimeAsync();
@@ -25,6 +26,7 @@ namespace BtcTurk.Samples
             var btcTurk_06 = await api.GetTradesAsync("BTCTRY");
             var btcTurk_07 = await api.GetOHLCAsync("BTCTRY");
             var btcTurk_08 = await api.GetKlinesAsync("BTCTRY", Api.Enums.BtcTurkPeriod.OneHour, DateTime.UtcNow.AddDays(-7), DateTime.UtcNow);
+            */
 
             // Private Endpoints
             var btcTurk_11 = await api.GetBalancesAsync();
@@ -47,7 +49,7 @@ namespace BtcTurk.Samples
             var ws = new BtcTurkStreamClient();
 
             // Public Socket Endpoints
-            var subs = new List<UpdateSubscription>();
+            var subs = new List<WebSocketUpdateSubscription>();
 
             // Single Ticker
             {

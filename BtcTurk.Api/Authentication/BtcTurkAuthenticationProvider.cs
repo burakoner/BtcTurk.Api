@@ -19,8 +19,8 @@ public class BtcTurkAuthenticationProvider : AuthenticationProvider
             var sign = string.Empty;
             var apiKey = Credentials.Key.GetString();
             var apiSecret = Credentials.Secret.GetString();
-            var nonce = DateTime.UtcNow.ToUnixTimeMilliseconds();
-            string message = apiKey + nonce;
+            var nonce = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            string message = $"{apiKey}{nonce}"; ;
             using (HMACSHA256 hmac = new HMACSHA256(Convert.FromBase64String(apiSecret)))
             {
                 byte[] signatureBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(message));
@@ -28,17 +28,17 @@ public class BtcTurkAuthenticationProvider : AuthenticationProvider
             }
 
             headers.Add("X-PCK", Credentials.Key!.GetString());
-            headers.Add("X-Stamp", nonce.ToString());
+            headers.Add("X-Stamp", nonce.ToString(CultureInfo.InvariantCulture));
             headers.Add("X-Signature", sign);
         }
     }
     
-    public override void AuthenticateSocketApi()
+    public override void AuthenticateTcpSocketApi()
     {
         throw new NotImplementedException();
     }
 
-    public override void AuthenticateStreamApi()
+    public override void AuthenticateWebSocketApi()
     {
         throw new NotImplementedException();
     }
