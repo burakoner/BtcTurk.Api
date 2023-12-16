@@ -35,7 +35,11 @@ public class BtcTurkRestClient : RestApiClient
     {
     }
 
-    public BtcTurkRestClient(BtcTurkRestClientOptions options) : base("BtcTurk Rest Api", options)
+    public BtcTurkRestClient(BtcTurkRestClientOptions options) : base(null, options)
+    {
+    }
+
+    public BtcTurkRestClient(ILogger logger, BtcTurkRestClientOptions options) : base(logger, options)
     {
     }
     #endregion
@@ -50,7 +54,7 @@ public class BtcTurkRestClient : RestApiClient
     }
 
     protected override TimeSyncInfo GetTimeSyncInfo()
-        => new(log, ((BtcTurkRestClientOptions)ClientOptions).AutoTimestamp, ((BtcTurkRestClientOptions)ClientOptions).TimestampRecalculationInterval, TimeSyncState);
+        => new(_logger, ((BtcTurkRestClientOptions)ClientOptions).AutoTimestamp, ((BtcTurkRestClientOptions)ClientOptions).TimestampRecalculationInterval, TimeSyncState);
 
     protected override TimeSpan GetTimeOffset()
         => TimeSyncState.TimeOffset;
@@ -379,7 +383,7 @@ public class BtcTurkRestClient : RestApiClient
     /// <param name="page">page number</param>
     /// <param name="ct">Cancellation Token</param>
     /// <returns></returns>
-    public async Task<RestCallResult<IEnumerable<BtcTurkOrder>>> GetAllOrdersAsync(string symbol = "", long? startOrderId = null, DateTime? startTime = null, DateTime? endTime = null, int? limit = 100, int? page = 1, CancellationToken ct = default)
+    public async Task<RestCallResult<IEnumerable<BtcTurkOrder>>> GetAllOrdersAsync(string symbol = "", long? startOrderId = null, DateTime? startTime = null, DateTime? endTime = null, int? limit = 50, int? page = 1, CancellationToken ct = default)
     {
         var parameters = new Dictionary<string, object>();
         parameters.AddOptionalParameter("pairSymbol", symbol);

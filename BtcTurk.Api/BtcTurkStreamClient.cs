@@ -1,6 +1,4 @@
-﻿using ApiSharp.WebSocket;
-
-namespace BtcTurk.Api;
+﻿namespace BtcTurk.Api;
 
 public class BtcTurkStreamClient : WebSocketApiClient
 {
@@ -9,7 +7,11 @@ public class BtcTurkStreamClient : WebSocketApiClient
     {
     }
 
-    public BtcTurkStreamClient(BtcTurkStreamClientOptions options) : base("BtcTurk WebSocket Api", options)
+    public BtcTurkStreamClient(BtcTurkStreamClientOptions options) : base(null, options)
+    {
+    }
+
+    public BtcTurkStreamClient(ILogger logger, BtcTurkStreamClientOptions options) : base(logger, options)
     {
     }
     #endregion
@@ -32,7 +34,7 @@ public class BtcTurkStreamClient : WebSocketApiClient
                 var desResult = Deserialize<T>(data);
                 if (!desResult.Success)
                 {
-                    log.Write(LogLevel.Warning, $"Failed to deserialize data: {desResult.Error}. Data: {data}");
+                    _logger.Log(LogLevel.Warning, $"Failed to deserialize data: {desResult.Error}. Data: {data}");
                     return false;
                 }
 
@@ -78,13 +80,13 @@ public class BtcTurkStreamClient : WebSocketApiClient
                             {
                                 if (subResponse.Data.OK)
                                 {
-                                    log.Write(LogLevel.Debug, "Subscription completed");
+                                    _logger.Log(LogLevel.Debug, "Subscription completed");
                                     callResult = new CallResult<object>(subResponse.Data);
                                     return true;
                                 }
                                 else
                                 {
-                                    log.Write(LogLevel.Warning, "Subscription failed: " + subResponse.Error);
+                                    _logger.Log(LogLevel.Warning, "Subscription failed: " + subResponse.Error);
                                     callResult = new CallResult<object>(subResponse.Error);
                                     return false;
                                 }
