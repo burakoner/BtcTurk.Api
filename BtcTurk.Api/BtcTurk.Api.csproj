@@ -19,7 +19,7 @@
     <NeutralLanguage>en</NeutralLanguage>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReleaseNotes>
-		Version 1.2.0 - 22 Feb 2023
+		Version 1.2.0 - 22 Feb 2024
 	</PackageReleaseNotes>
 	<PackageIcon>BtcTurk.Api.png</PackageIcon>
     <PackageIconUrl />
