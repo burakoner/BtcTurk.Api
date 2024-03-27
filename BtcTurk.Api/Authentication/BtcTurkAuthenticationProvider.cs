@@ -32,7 +32,7 @@ public class BtcTurkAuthenticationProvider : AuthenticationProvider
             headers.Add("X-Signature", sign);
         }
     }
-    
+
     public override void AuthenticateTcpSocketApi()
     {
         throw new NotImplementedException();
@@ -41,5 +41,25 @@ public class BtcTurkAuthenticationProvider : AuthenticationProvider
     public override void AuthenticateWebSocketApi()
     {
         throw new NotImplementedException();
+    }
+
+    internal static string ComputeHash(string privateKey, string baseString)
+    {
+        var key = Convert.FromBase64String(privateKey);
+        string hashString;
+
+        using (var hmac = new HMACSHA256(key))
+        {
+            var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(baseString));
+            hashString = Convert.ToBase64String(hash);
+        }
+
+        return hashString;
+    }
+
+    internal static long ToUnixTime(DateTime date)
+    {
+        var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        return Convert.ToInt64((date - epoch).TotalMilliseconds);
     }
 }

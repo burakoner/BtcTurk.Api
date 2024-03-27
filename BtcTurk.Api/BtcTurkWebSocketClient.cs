@@ -1,17 +1,17 @@
 ﻿namespace BtcTurk.Api;
 
-public class BtcTurkStreamClient : WebSocketApiClient
+public class BtcTurkWebSocketClient : WebSocketApiClient
 {
     #region Constructor/Destructor
-    public BtcTurkStreamClient() : this(BtcTurkStreamClientOptions.Default)
+    public BtcTurkWebSocketClient() : this(BtcTurkWebSocketClientOptions.Default)
     {
     }
 
-    public BtcTurkStreamClient(BtcTurkStreamClientOptions options) : base(null, options)
+    public BtcTurkWebSocketClient(BtcTurkWebSocketClientOptions options) : base(null, options)
     {
     }
 
-    public BtcTurkStreamClient(ILogger logger, BtcTurkStreamClientOptions options) : base(logger, options)
+    public BtcTurkWebSocketClient(ILogger logger, BtcTurkWebSocketClientOptions options) : base(logger, options)
     {
     }
     #endregion
@@ -110,104 +110,98 @@ public class BtcTurkStreamClient : WebSocketApiClient
 
     protected override bool MessageMatchesHandler(WebSocketConnection connection, JToken message, object request)
     {
-        try
+        // Check Point
+        if (message == null || message[0] == null || message.Count() != 2)
+            return false;
+
+        // Check Point
+        var parseResult = int.TryParse(message[0].ToString(), out var modelNumber);
+        if (parseResult == false || modelNumber == 0)
+            return false;
+
+        // Result
+        if (modelNumber == 100)
+            return false;
+
+        // Request
+        else if (modelNumber == 101)
+            return false;
+
+        // UserLogin
+        else if (modelNumber == 111)
+            return false;
+
+        // UserLoginResult
+        else if (modelNumber == 112)
+            return false;
+
+        // UserLogout
+        else if (modelNumber == 113)
+            return false;
+
+        // Subscription Request
+        else if (modelNumber == 151)
+            return false;
+
+        // BalanceUpdated
+        else if (modelNumber == 201)
+            return false;
+
+        // 401: TickerAll
+        // 402: TickerPair
+        // 421: TradeList
+        // 422: TradeSingle
+        // 428: TradingView
+        // 431: OrderBookFull
+        // 432: OrderBookDifference
+        else if (modelNumber.IsOneOf(401, 402, 421, 422, 428, 431, 432))
         {
-            // Check Point
-            if (message == null || message[0] == null || message.Count() != 2)
-                return false;
-
-            int modelNumber = 0;
-            var parseResult = int.TryParse(message[0].ToString(), out modelNumber);
-
-            // Check Point
-            if (parseResult == false || modelNumber == 0)
-                return false;
-
-            // Result
-            if (modelNumber == 100)
-                return false;
-
-            // Request
-            else if (modelNumber == 101)
-                return false;
-
-            // UserLogin
-            else if (modelNumber == 111)
-                return false;
-
-            // UserLoginResult
-            else if (modelNumber == 112)
-                return false;
-
-            // UserLogout
-            else if (modelNumber == 113)
-                return false;
-
-            // Subscription Request
-            else if (modelNumber == 151)
-                return false;
-
-            // BalanceUpdated
-            else if (modelNumber == 201)
-                return false;
-
-            // 401: TickerAll
-            // 402: TickerPair
-            // 421: TradeList
-            // 422: TradeSingle
-            // 428: TradingView
-            // 431: OrderBookFull
-            // 432: OrderBookDifference
-            else if (modelNumber.IsOneOf(401, 402, 421, 422, 428, 431, 432))
+            var ch = string.Empty;
+            if (modelNumber == 401) ch = "ticker";
+            else if (modelNumber == 402) ch = "ticker";
+            else if (modelNumber == 421) ch = "trade";
+            else if (modelNumber == 422) ch = "trade";
+            else if (modelNumber == 428) ch = "tradeview";
+            else if (modelNumber == 431) ch = "orderbook";
+            else if (modelNumber == 432) ch = "obdiff";
+            if (request is object[] req)
             {
-                var ch = string.Empty;
-                if (modelNumber == 401) ch = "ticker";
-                else if (modelNumber == 402) ch = "ticker";
-                else if (modelNumber == 421) ch = "trade";
-                else if (modelNumber == 422) ch = "trade";
-                else if (modelNumber == 428) ch = "tradeview";
-                else if (modelNumber == 431) ch = "orderbook";
-                else if (modelNumber == 432) ch = "obdiff";
-                if (request is object[] req)
+                if (req.Length == 2)
                 {
-                    if (req.Length == 2)
+                    if (req[0] is int && req[1] is BtcTurkStreamRequest)
                     {
-                        if (req[0] is int && req[1] is BtcTurkStreamRequest)
+                        BtcTurkStreamRequest r = (BtcTurkStreamRequest)req[1];
+                        if (r.Type == 151
+                            && (modelNumber.IsOneOf(431, 432) ? r.Channel.IsOneOf("orderbook", "obdiff") : r.Channel == ch)
+                            && r.Event == message[1]["event"].ToString()
+                            && r.Join)
                         {
-                            BtcTurkStreamRequest r = (BtcTurkStreamRequest)req[1];
-                            if (r.Type == 151
-                                && (modelNumber.IsOneOf(431, 432) ? r.Channel.IsOneOf("orderbook", "obdiff") : r.Channel == ch)
-                                && r.Event == message[1]["event"].ToString()
-                                && r.Join)
-                            {
-                                return true;
-                            }
+                            return true;
                         }
                     }
                 }
             }
-
-            // UserOrderMatch
-            else if (modelNumber == 441)
-                return false;
-
-            // OrderInsert
-            else if (modelNumber == 451)
-                return false;
-
-            // OrderDelete
-            else if (modelNumber == 452)
-                return false;
-
-            // OrderUpdate
-            else if (modelNumber == 453)
-                return false;
-
-            // Welcome Message
-            else if (modelNumber == 991)
-                return false;
         }
-        catch { }
+
+        // UserOrderMatch
+        else if (modelNumber == 441)
+            return false;
+
+        // OrderInsert
+        else if (modelNumber == 451)
+            return false;
+
+        // OrderDelete
+        else if (modelNumber == 452)
+            return false;
+
+        // OrderUpdate
+        else if (modelNumber == 453)
+            return false;
+
+        // Welcome Message
+        else if (modelNumber == 991)
+            return false;
 
         return false;
     }
@@ -220,54 +214,51 @@ public class BtcTurkStreamClient : WebSocketApiClient
         return false;
     }
 
-    protected override Task<CallResult<bool>> AuthenticateAsync(WebSocketConnection s)
+    protected override async Task<CallResult<bool>> AuthenticateAsync(WebSocketConnection s)
     {
-        throw new NotImplementedException();
+        if (AuthenticationProvider == null)
+            return new CallResult<bool>(new NoApiCredentialsError());
 
-        /*
-        if (authProvider == null)
-            return new CallResult<bool>(false, new NoApiCredentialsError());
+        var publicKey = AuthenticationProvider.Credentials.Key.GetString();
+        var privateKey = AuthenticationProvider.Credentials.Secret.GetString();
+        var nonce = 3000L;
+        var baseString = $"{publicKey}{nonce}";
+        var signature = BtcTurkAuthenticationProvider.ComputeHash(privateKey, baseString);
+        var timestamp = BtcTurkAuthenticationProvider.ToUnixTime(DateTime.UtcNow);
+        var authObject = new BtcTurkSocketAuthRequest(114, publicKey, timestamp, nonce, signature).RequestObject();
 
-        var authParams = authProvider.AddAuthenticationToParameters(""/*baseAddressAuthenticated* /, HttpMethod.Get, new Dictionary<string, object>(), true, HttpMethodParameterPosition.InBody, ArrayParametersSerialization.Array);
-        var authObjects = new BtcTurkAuthenticationRequest
+        CallResult<bool> result = new CallResult<bool>(new ServerError("No response from server"));
+        await s.SendAndWaitAsync(authObject, ClientOptions.ResponseTimeout, data =>
         {
-            AccessKeyId = authProvider.Credentials.Key.GetString(),
-            Operation = "auth",
-            SignatureMethod = (string)authParams["SignatureMethod"],
-            SignatureVersion = authParams["SignatureVersion"].ToString(),
-            Timestamp = (string)authParams["Timestamp"],
-            Signature = (string)authParams["Signature"]
-        };
-
-        CallResult<bool> result = new CallResult<bool>(false, new ServerError("No response from server"));
-        await s.SendAndWaitAsync(authObjects, ResponseTimeout, data =>
-        {
-            if ((string)data["op"] != "auth")
-                return false;
-
-            /*
-            var authResponse = Deserialize<BtcTurkSocketAuthDataResponse<object>>(data, false);
-            if (!authResponse.Success)
+            try
             {
-                log.Write(LogVerbosity.Warning, "Authorization failed: " + authResponse.Error);
-                result = new CallResult<bool>(false, authResponse.Error);
+                if ((int)data[1]["type"] != 114)
+                    return false;
+
+                var authResponse = Deserialize<BtcTurkSocketAuthResponse>(data[1]);
+                if (!authResponse.Success)
+                {
+                    _logger.Log(LogLevel.Warning, "Authorization failed: " + authResponse.Error);
+                    result = new CallResult<bool>(authResponse.Error);
+                    return true;
+                }
+                if (!authResponse.Data.OK)
+                {
+                    _logger.Log(LogLevel.Warning, "Authorization failed: " + authResponse.Data.Message);
+                    result = new CallResult<bool>(new ServerError(authResponse.Data.Message));
+                    return true;
+                }
+
+                _logger.Log(LogLevel.Debug, "Authorization completed");
+                result = new CallResult<bool>(true, null);
                 return true;
             }
-            if (!authResponse.Data.IsSuccessful)
-            {
-                log.Write(LogVerbosity.Warning, "Authorization failed: " + authResponse.Data.ErrorMessage);
-                result = new CallResult<bool>(false, new ServerError(authResponse.Data.ErrorCode, authResponse.Data.ErrorMessage));
-                return true;
-            }
-            * /
+            catch { }
 
-            log.Write(LogLevel.Debug, "Authorization completed");
-            result = new CallResult<bool>(true, null);
-            return true;
+            return false;
         });
 
         return result;
-        */
     }
 
     protected override async Task<bool> UnsubscribeAsync(WebSocketConnection connection, WebSocketSubscription s)
@@ -379,7 +370,7 @@ public class BtcTurkStreamClient : WebSocketApiClient
     #endregion
 
     /*
-    public virtual async Task<CallResult<bool>> Login(string username, string token)
+    public virtual async Task<CallResult<bool>> LoginAsync(string username, string token)
     {
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(token))
             return new CallResult<bool>(false);
@@ -389,16 +380,16 @@ public class BtcTurkStreamClient : WebSocketApiClient
         CallResult<bool> result = new CallResult<bool>(false);
         var response = await QueryAsync<BtcTurkSocketLoginResponse>(request, false);
 
-        /*
+        /** /
         GetSocketConnection()
 
-        /*
+        /** /
         , data =>
         {
             if ((string)data["op"] != "auth")
                 return false;
 
-            /*
+            /** /
             var authResponse = Deserialize<BtcTurkSocketAuthDataResponse<object>>(data, false);
             if (!authResponse.Success)
             {
@@ -412,17 +403,16 @@ public class BtcTurkStreamClient : WebSocketApiClient
                 result = new CallResult<bool>(false, new ServerError(authResponse.Data.ErrorCode, authResponse.Data.ErrorMessage));
                 return true;
             }
-            * /
+            /** /
 
             log.Write(LogLevel.Debug, "Authorization completed");
             result = new CallResult<bool>(true, null);
             return true;
         });
-        * /
+        /** /
 
         return result;
     }
     */
-
 
 }

@@ -259,7 +259,7 @@ public class BtcTurkRestClient : RestApiClient
             return result.AsError<IEnumerable<BtcTurkKline>>(new BtcTurkApiError(result.Error.Code, result.Error.Message, result.Error.Data));
 
         // Parse Result
-        List<BtcTurkKline> response = new();
+        List<BtcTurkKline> response = [];
         var maxRows = Math.Min(result.Data.Times.Length, result.Data.Opens.Length);
         maxRows = Math.Min(maxRows, result.Data.Highs.Length);
         maxRows = Math.Min(maxRows, result.Data.Lows.Length);
@@ -305,7 +305,7 @@ public class BtcTurkRestClient : RestApiClient
     /// <param name="endTime">long, Optional timestamp if null will return last 30 days</param>
     /// <param name="ct">Cancellation Token</param>
     /// <returns></returns>
-    public async Task<RestCallResult<IEnumerable<BtcTurkOrderTransaction>>> GetTradeTransactionsAsync(long? orderId = null, string symbol = null, string[] assets = null, BtcTurkOrderSide[] type = null, DateTime? startTime = null, DateTime? endTime = null, CancellationToken ct = default)
+    public async Task<RestCallResult<IEnumerable<BtcTurkOrderTransaction>>> GetUserTransactionsAsync(long? orderId = null, string symbol = null, string[] assets = null, BtcTurkOrderSide[] type = null, DateTime? startTime = null, DateTime? endTime = null, CancellationToken ct = default)
     {
         var parameters = new Dictionary<string, object>();
         parameters.AddOptionalParameter("orderId", orderId);
@@ -411,7 +411,7 @@ public class BtcTurkRestClient : RestApiClient
     public async Task<RestCallResult<BtcTurkOrder>> GetOrderAsync(long orderId, CancellationToken ct = default)
     {
         var endpoint = orderIdEndpoint.Replace("{id}", orderId.ToString());
-        return await ExecuteAsync<BtcTurkOrder>(GetUri(v1, allOrdersEndpoint), HttpMethod.Get, ct, signed: true).ConfigureAwait(false);
+        return await ExecuteAsync<BtcTurkOrder>(GetUri(v1, endpoint), HttpMethod.Get, ct, signed: true).ConfigureAwait(false);
     }
 
     /// <summary>
